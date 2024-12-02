@@ -1,13 +1,26 @@
 # instruction to install project python environnement
 
-### create env
+
+### requirements
+
+You must have `python3` installed, along with `pip`.
+
+### create and activate env
 
 ```sh
 python -m venv venv
+source venv/bin/activate
 ```
 
-### activate env
+### install pygame and tkinter if needed on venv
 
 ```sh
-source venv/bin/activate
+pip install tk
+pip install pygame
+```
+
+### run the application
+
+```sh
+python3 Animation.py
 ```

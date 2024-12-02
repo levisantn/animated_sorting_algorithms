@@ -13,7 +13,8 @@ class Animation:
         self.song = ['a', 'b', 'c', 'd']  # ensemble des notes de musique
         self.mute = True  # variable qui controle le son actif ou pas
         for i in range(len(self.song)):  # on créer un module de son pour chaque note
-            self.song[i] = pygame.mixer.Sound("notes/%s.wav" % self.song[i])
+            self.song[i] = pygame.mixer.Sound(
+                "assets/note/%s.wav" % self.song[i])
             self.song[i].set_volume(1)
         self.ind_verif = 0  # un indice de vérification utile seulement pour certains tris
         self.memory = []
@@ -50,8 +51,8 @@ class Animation:
                               width=self.weight, bg=self.background)  # Canvas principal
         # Canvas des images on et off
         self.ONOFF = Canvas(self.Window, height=65, width=150, bg="white")
-        self.img_off = PhotoImage(file='off.gif')
-        self.img_on = PhotoImage(file='on.gif')
+        self.img_off = PhotoImage(file='assets/button/off.gif')
+        self.img_on = PhotoImage(file='assets/button/on.gif')
         self.ONOFF.create_image(32, 35, image=self.img_off,  tags="image_off")
         self.ONOFF.create_image(120, 35, image=self.img_on,  tags="image_on")
         self.canevas.create_text(10, 10, anchor='nw', text=str(
@@ -70,8 +71,6 @@ class Animation:
                          bg=self.background, command=self.button_animation_merge_sort)
         self.b5 = Button(self.Window, text="RADIX SORT",
                          bg=self.background, command=self.button_animation_radix_sort)
-        self.bson = Button(self.Window, text="audio",
-                           bg=self.background, state="disabled", command=self.audio)
         # champ de saisie du nbr de rectangle
         self.field = Entry(self.Window, textvariable=self.nbr)
         self.field.delete(0, END)  # on enleve le 0 par défaut
@@ -97,7 +96,6 @@ class Animation:
                command=self.helpme).pack(side=RIGHT, padx=10)
         self.ONOFF.pack(side=RIGHT, padx=20, pady=5)
         self.sliderspeed.pack(padx=50, pady=5)
-        self.bson.pack(padx=5, pady=5)
 
     # FUNCTIONS
 
@@ -115,9 +113,6 @@ class Animation:
         self.S.reset()
         self.stop = False  # Aucun tri n'est en cours donc on est réinitialise la valeur a false pour que le tri se lance des l'appui du bouton
         self.List_rectangles = []  # on réinitialise la liste de rectangles
-
-    def audio(self):  # on inverse la valeur de la variable mute à chaque clic sur le bouton audio
-        self.mute = not (self.mute)
 
     def too_much(self):  # on regarde si il y trop de rectangles à supporter pour le canvas
         # on récupère le nbr de rectangles saisie
@@ -181,14 +176,6 @@ class Animation:
 
         if event.keysym == "Return":  # pression de la touche Entrée
             self.creation()  # créer un nouveau Diagramme
-
-    def sing(self, ind_note):  # gestionnaire du son
-        if ind_note == 1:
-            for i in range(len(self.song)):  # on arrete tout les sons
-                self.song[i].stop()
-        else:
-            if not (self.mute):  # si l'utilisateur veut de l'audio... Sinon pas de sons
-                self.song[ind_note].play()  # ... on joue la note donnée
 
     def update_comp(self):  # on met à jour le nombre de comparaisons éffectuées
         self.canevas.itemconfig("cpt", text=str(
@@ -359,7 +346,6 @@ class Animation:
         if not self.ending:
             self.creation()  # ... on ne peut pas ! A la place on créer un nouveau Diagramme
         else:
-            self.bson.config(state="normal")
             self.safety_on()   # on désactive tout les boutons
             self.S.select_sort()  # on trie...
             self.conductor_selection_sort()  # ... puis on anime
@@ -374,10 +360,8 @@ class Animation:
             self.canevas.dtag("comp", "comp")
             self.canevas.dtag("comp", "comp")
             self.safety_off()
-            self.bson.config(state="disabled")
         else:
             # c'est le signal pour stopper le son joué précédemment si il est encore en train de jouer
-            self.sing(1)
             self.update_comp()
             self.settings_speed()
             if not self.stop:
@@ -414,7 +398,6 @@ class Animation:
         self.canevas.itemconfig("mini", fill=self.color_current)
         # on colorie ceux qui sont tag ok avec la couleur pour trier
         self.canevas.itemconfig("ok", fill=self.color_ok)
-        self.sing(2)  # joue une note lors de la découverte d'un nouveau minimum
         self.ind_current += 1  # on passe au prochain tuple
         # on reprend l'animation de la liste d'animation
         self.Window.after(self.turbo, self.conductor_selection_sort)
@@ -438,7 +421,6 @@ class Animation:
         self.canevas.itemconfig("ok", fill=self.color_moved)
         # ajoute le tag ok à tout les items qui sont tag mini
         self.canevas.addtag_withtag("mini", "ok")
-        self.sing(3)  # joue une note lors de la découverte d'un nouveau minimum
         self.ind_current += 1  # on passe au prochain tuple
         # on reprend l'animation de la liste d'animation
         self.Window.after(2 * self.turbo, self.conductor_selection_sort)
@@ -453,7 +435,6 @@ class Animation:
         self.canevas.itemconfig(
             self.List_rectangles[self.S.List_animation[self.ind_current][1]], tags="comp")
         self.canevas.itemconfig("comp", fill=self.color_comp)
-        self.sing(0)
         self.ind_current += 1  # on passe au prochaon tuple
         # on reprend l'animation de la liste d'animation
         self.Window.after(self.turbo, self.conductor_selection_sort)
